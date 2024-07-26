@@ -1,0 +1,402 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{tfrupee}
+\usepackage{ragged2e}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{xurl}
+\usepackage{geometry}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+ \geometry{
+ a4paper,
+ total={170mm,240mm},
+ left=20mm,
+ top=20mm,
+ }
+% begin the document.
+\begin{document}
+
+% make a title page.[this creates title page]
+\begin{center}\textbf{
+\LARGE{EE338 : Digital Signal Processing}\\\vspace{1em}
+\vspace{1em} \\ 
+\LARGE{Filter Design Assignment III}\\
+\vspace{1em}
+\large{March 20, 2023}\\
+\vfill
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.2]{logo.png}
+\end{figure}
+\vspace{1em}
+\large{Indian Institute of Technology, Bombay}\\
+\vfill
+\LARGE{Amruta Mahendra Parulekar} \\
+\LARGE{Roll no. 20d070009} \vspace{2em}
+\\\large{Reviewed by Sameep Chattopadhyay, 20d070067}
+
+}
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+\section{Student Details} %[This segment creates Section as seen in document]
+\begin{itemize}[nolistsep]
+    \item Name = Amruta Mahendra Parulekar
+    \item Roll no. = 20d070009
+    \item Filter number m = 26
+    \item Group number = 3
+    \item Review member = Sameep Chattopadhyay, 20d070067 (Has reviewed my report)
+\end{itemize}
+\section{Bandpass FIR filter Design}
+\subsection{Un-normalized discrete time filter specifications}
+
+  
+    The filter to be designed is a Band-pass filter where:
+    \begin{equation}
+        q(m) = \floor{m/10} = \floor{2.6} = 2
+    \end{equation}
+    \begin{equation}
+        r(m) = 26 - 10*q(m) = 26 - 10*2 = 6
+    \end{equation}
+    \begin{equation}
+        BL(m) = 10 + 5*q(m) + 13*r(m) = 10 + 5*2 + 13*6 = 98
+    \end{equation}
+    \begin{equation}
+        BH(m) = BL(m) + 75 = 98 + 75 = 173
+    \end{equation}
+  
+
+    \begin{enumerate}
+    %\item \textbf{The passband will be monotonic and the stopband will be monotonic}
+    \item \textbf{The passband will be from 98 kHz to 173 kHz}
+    \item \textbf{The transition band will be 5 kHz on either side of the passband}
+    \item \textbf{The stopband will be from 0 - 93 kHz and 178 - 300kHz} ( sampling rate 600 kHz)
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+\subsection{Normalized discrete time filter specifications}
+Sampling rate is 600 kHz, which corresponds to 2$\pi$ on the normalized frequency axis.
+\\So on normalizing the frequency axis, each frequency $\Omega_1$ below 300 kHz gets mapped using the function:
+\begin{equation}
+    \omega=\frac{\Omega_1 * 2 \pi}{(Sampling Rate)}
+\end{equation}
+\begin{enumerate}
+    %\item \textbf{The passband will be monotonic and the stopband will be monotonic}
+    \item \textbf{The passband will be from 0.3267 $\pi$ to 0.5767 $\pi$}
+    \item \textbf{The transition band will be 0.017 $\pi$ on either side of the passband}
+    \item \textbf{The stopband will be from 0 $\pi$ - 0.31 $\pi$ and 0.593 $\pi$- $\pi$}
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+\newpage
+
+\subsection{FIR Filter Transfer function using Kaiser
+Window}
+\subsubsection{Window shape and size calculation}
+The tolerance in both stopband and passband is given to be 0.15.
+Therefore, $\delta$=0.15 and we get the minimum stopband attenuation to be:
+\begin{equation}
+    A=-20log(0.15)=16.4782dB
+\end{equation}
+Since A $<$ 21, we get $\beta$ to be 0.
+\\Since $\alpha = N\beta $, $\alpha$ will also be 0.
+\\Here, $\alpha$ and $\beta$ are shape parameters of the Kaiser window.
+\\Now to estimate the window length required, we use the empirical formula for the lower bound
+on the window length
+\begin{equation}
+    2N+1 \geq 1+\frac{A-8}{2.285*\Delta\omega_T}
+\end{equation}
+Here $\Delta\omega_T$ is the minimum transition width. In our case, the transition width is the same on either
+side of the passband.
+\begin{equation}
+    \Delta\omega_T=\frac{2\pi}{f_s} * 5kHz= \frac{\pi}{60}=0.05236
+\end{equation}
+On substituting in (6) and (8) in (7), we get
+\begin{equation}
+    N \geq 36
+\end{equation}
+The above equation gives a loose bound on the window length when the tolerance is not very
+stringent. 
+On successive trials in MATLAB,it was found that a window length of 88 is sufficient to satisfy
+the required constraints.
+\\On increasing N further to 101, we can see that the filter satisfies the conditions even better, but as N increases, our filter needs more delay stages and will become more resource intensive, so we prefer the smallest possible N.
+\\Also, since $\beta$ is 0, the window is a
+rectangular window.
+\subsubsection{Time Domain Coefficients}
+In order to find the time domain coefficients, first the ideal impulse response samples for the
+same length as that of the window are generated. Then, the Kaiser Window is generated using
+the MATLAB function and applied on the ideal impulse response samples. For generating the ideal
+impulse response a separate function was made to generate the impulse response of Low-Pass
+filter. It took the cutoff value and the number of samples as input argument. The band pass
+impulse response samples are then generated as the difference between two low-pass filters.
+\\The 88 coefficients are noted as follows:
+\\FIRBandPass =
+
+  Columns 1 through 10
+
+   -0.0038    0.0107    0.0105   -0.0091   -0.0104    0.0023   -0.0002    0.0004    0.0134    0.0044
+
+  Columns 11 through 20
+
+   -0.0174   -0.0089    0.0089    0.0032    0.0025    0.0122   -0.0051   -0.0238   -0.0012    0.0188
+
+  Columns 21 through 30
+
+    0.0038    0.0001    0.0075   -0.0160   -0.0255    0.0151    0.0300   -0.0034   -0.0084    0.0014
+
+  Columns 31 through 40
+
+   -0.0266   -0.0194    0.0452    0.0397   -0.0304   -0.0265   -0.0001   -0.0392    0.0044    0.1339
+
+  Columns 41 through 50
+
+    0.0453   -0.2026   -0.1319    0.2007    0.2007   -0.1319   -0.2026    0.0453    0.1339    0.0044
+
+  Columns 51 through 60
+
+   -0.0392   -0.0001   -0.0265   -0.0304    0.0397    0.0452   -0.0194   -0.0266    0.0014   -0.0084
+
+  Columns 61 through 70
+
+   -0.0034    0.0300    0.0151   -0.0255   -0.0160    0.0075    0.0001    0.0038    0.0188   -0.0012
+
+  Columns 71 through 80
+
+   -0.0238   -0.0051    0.0122    0.0025    0.0032    0.0089   -0.0089   -0.0174    0.0044    0.0134
+
+  Columns 81 through 88
+
+    0.0004   -0.0002    0.0023   -0.0104   -0.0091    0.0105    0.0107   -0.0038
+   \\Thus We have realized a bandpass filter in terms of finite impulses. In case of FIR, the number of impulses
+are 88. Thus, we will have terms from 1 to $z^{-87}$. This filter is definitely stable and causal. As we have
+shifted the impulses, we expect to get a linear phase response in the pass-band region.
+\subsubsection{Impulse response plot}
+\begin{center}
+    \includegraphics[scale=0.3]{ir1.jpg}
+\end{center}
+
+
+\subsection{Comparison between FIR and IIR realizations}
+\subsubsection{Magnitude and phase vs Normalized Frequency plots}
+\textbf{A] FIR Realization}
+\begin{center}
+    \includegraphics[scale=0.3]{mpu1.jpg}
+\end{center}
+\textbf{B] IIR Realization}
+\begin{center}
+    \includegraphics[scale=0.6]{p1.jpg}
+    \includegraphics[scale=0.6]{p2.jpg}
+\end{center}
+\subsubsection{Magnitude vs Un-normalized Frequency plots}
+\textbf{A] FIR Realization}
+\begin{center}
+    \includegraphics[scale=0.4]{mru1.jpg}
+\end{center}
+On increasing N further to 101, we can see that the filter satisfies the conditions even better, but as N increases, our filter needs more delay stages and will become more resource intensive, so we prefer the smallest possible N.
+\begin{center}
+    \includegraphics[scale=0.4]{p3.jpg}
+\end{center}
+\textbf{B] IIR Realization}
+\begin{center}
+    \includegraphics[scale=1]{p4.jpg}
+\end{center}
+\subsubsection{Comparisons}
+\begin{itemize}
+    \item In both realizations, the specifications are satisfied and we can observe fs1,fs2,fp1 \& fp2.
+    \item The Butterworth filter has a monotonic passband and a monotonic stopband while the FIR filter has ripples in both its passband and stopband.
+    \item The FIR filter phase response is linear, while the Butterworth filter phase response was slightly non-linear.
+    \item The Butterworth filter had an order of 38 in both the numerator and denominator, thus requiring around 76 delay stages. For the FIR filter, we need terms till $z^{-87}$ (87 delays) , or for even better condition satisfaction, we need terms till $z^{-100}$ (100 delays), thus it has a higher resource demand than the IIR filter.
+    \item For FIR filter, we need to adjust the value of N to meet our design specifications, whereas no such
+tuning is required in IIR case, which is a disadvantage of FIR filters
+\end{itemize}
+
+
+
+\subsection{Code}
+\textbf{A] Ideal Lowpass Function}
+\\\includegraphics[scale=0.9]{code2.jpg}
+\newpage
+\\\textbf{B] Bandpass Function}
+    \\\includegraphics[scale=0.9]{code1.jpg}
+
+\section{Bandstop FIR filter Design}
+\subsection{Un-normalized discrete time filter specifications}
+
+  
+    The filter to be designed is a Band-stop filter where:
+    \begin{equation}
+        q(m) = \floor{m/10} = \floor{2.6} = 2
+    \end{equation}
+    \begin{equation}
+        r(m) = 26 - 10*q(m) = 26 - 10*2 = 6
+    \end{equation}
+    \begin{equation}
+        BL(m) = 20 + 3*q(m) + 11*r(m) = 20 + 3*2 + 11*6 = 92
+    \end{equation}
+    \begin{equation}
+        BH(m) = BL(m) + 40 = 92 + 40 = 132
+    \end{equation}
+  
+
+    \begin{enumerate}
+    %\item \textbf{The passband will be equiripple and the stopband will be monotonic}
+    \item \textbf{The stopband will be from 92 kHz to 132 kHz}
+    \item \textbf{The transition band will be 5 kHz on either side of the stopband}
+    \item \textbf{The passband is from 0 - 87 kHz and 137 - 212.5kHz} ( sampling rate 425 kHz)
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+\subsection{Normalized discrete time filter specifications}
+Sampling rate is 425 kHz, which corresponds to 2$\pi$ on the normalized frequency axis.
+\\So on normalizing the frequency axis, each frequency $\Omega_1$ below 212.5 kHz gets mapped using the function:
+\begin{equation}
+    \omega=\frac{\Omega_1 * 2 \pi}{(Sampling Rate)}
+\end{equation}
+\begin{enumerate}
+    %\item \textbf{The passband will be equiripple and the stopband will be monotonic}
+    \item \textbf{The stopband will be from 0.4329 $\pi$ to 0.6212 $\pi$}
+    \item \textbf{The transition band will be 0.0235 $\pi$ on either side of the stopband}
+    \item \textbf{The passband will be from 0 - 0.4094 $\pi$ and 0.6447 $\pi$ - $\pi$} 
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+
+\subsection{FIR Filter Transfer function using Kaiser
+Window}
+\subsubsection{Window shape and size calculation}
+The tolerance in both stopband and passband is given to be 0.15.
+Therefore, $\delta$=0.15 and we get the minimum stopband attenuation to be:
+\begin{equation}
+    A=-20log(0.15)=16.4782dB
+\end{equation}
+Since A $<$ 21, we get $\beta$ to be 0.
+\\Since $\alpha = N\beta $, $\alpha$ will also be 0.
+\\Here, $\alpha$ and $\beta$ are shape parameters of the Kaiser window.
+\\Now to estimate the window length required, we use the empirical formula for the lower bound
+on the window length
+\begin{equation}
+    2N+1 \geq 1+\frac{A-8}{2.285*\Delta\omega_T}
+\end{equation}
+Here $\Delta\omega_T$ is the minimum transition width. In our case, the transition width is the same on either
+side of the passband.
+\begin{equation}
+    \Delta\omega_T=\frac{2\pi}{f_s} * 5kHz= \frac{\pi}{42.5}=0.07392
+\end{equation}
+On substituting  (15) and (17) in (16), we get
+\begin{equation}
+    N \geq 26
+\end{equation}
+The above equation gives a loose bound on the window length when the tolerance is not very
+stringent. 
+On successive trials in MATLAB,it was found that a window length of 65 is sufficient to satisfy
+the required constraints.
+\\On increasing N further to 71, we can see that the filter satisfies the conditions even better, but as N increases, our filter needs more delay stages and will become more resource intensive, so we prefer the smallest possible N.
+\\Also, since $\beta$ is 0, the window is a
+rectangular window.
+\subsubsection{Time Domain Coefficients}
+In order to find the time domain coefficients, first the ideal impulse response samples for the
+same length as that of the window are generated. The Kaiser Window was generated using the
+MATLAB function and applied on the ideal impulse response samples. For generating the ideal
+impulse response a separate function was made to generate the impulse response of Low-Pass
+filter. It took the cutoff value and the number of samples as input argument. The band-stop
+impulse response samples were generated as the difference between three low-pass filters ( allpass - bandpass ).
+
+\\The 65 coefficients are noted as follows:
+\\FIRBandStop =
+
+  Columns 1 through 10
+
+   -0.0171    0.0077    0.0093   -0.0030    0.0018   -0.0076   -0.0102    0.0194    0.0119   -0.0251
+
+  Columns 11 through 20
+
+   -0.0073    0.0192    0.0015   -0.0013   -0.0004   -0.0218    0.0068    0.0390   -0.0169   -0.0405
+
+  Columns 21 through 30
+
+    0.0209    0.0231   -0.0077    0.0072   -0.0286   -0.0370    0.0844    0.0523   -0.1457   -0.0450
+
+  Columns 31 through 40
+
+    0.1937    0.0176    0.7882    0.0176    0.1937   -0.0450   -0.1457    0.0523    0.0844   -0.0370
+
+  Columns 41 through 50
+
+   -0.0286    0.0072   -0.0077    0.0231    0.0209   -0.0405   -0.0169    0.0390    0.0068   -0.0218
+
+  Columns 51 through 60
+
+   -0.0004   -0.0013    0.0015    0.0192   -0.0073   -0.0251    0.0119    0.0194   -0.0102   -0.0076
+
+  Columns 61 through 65
+
+    0.0018   -0.0030    0.0093    0.0077   -0.0171
+   \\We have realized a band-stop filter in terms of both infinite and finite impulses. In FIR case, the
+number of impulses are 65. Hence for the transfer function, we will have terms from 1 to $z^{−64}$
+ .The
+filter is stable as all poles lie within the unit cycle and causal. As we have shifted the impulses, we
+expect to get a linear phase
+response in the stop-band region
+\subsubsection{Impulse response plot}
+\begin{center}
+    \includegraphics[scale=0.4]{ag.jpg}
+\end{center}
+
+
+\subsection{Comparison between FIR and IIR realizations}
+\subsubsection{Magnitude and phase vs Normalized Frequency plots}
+\textbf{A] FIR Realization}
+\begin{center}
+    \includegraphics[scale=0.3]{ab.jpg}
+\end{center}
+\textbf{B] IIR Realization}
+\begin{center}
+    \includegraphics[scale=0.6]{ae.jpg}
+    \includegraphics[scale=0.6]{ad.jpg}
+\end{center}
+\subsubsection{Magnitude vs Un-normalized Frequency plots}
+\textbf{A] FIR Realization}
+\begin{center}
+    \includegraphics[scale=0.4]{aa.jpg}
+\end{center}
+On increasing N further to 71, we can see that the filter satisfies the conditions even better, but as N increases, our filter needs more delay stages and will become more resource intensive, so we prefer the smallest possible N.
+\begin{center}
+    \includegraphics[scale=0.4]{al.jpg}
+\end{center}
+\textbf{B] IIR Realization}
+\begin{center}
+    \includegraphics[scale=1]{ac.jpg}
+\end{center}
+\subsubsection{Comparisons}
+\begin{itemize}
+    \item In both realizations, the specifications are satisfied and we can observe fs1,fs2,fp1 \& fp2.
+    \item The Chebyshev filter has a equiripple passband and a monotonic stopband while the FIR filter has ripples in both its passband and stopband.
+    \item The FIR filter phase response is linear, while the Chebyshev filter phase response was non-linear.
+    \item The Chebyshev filter had an order of 10 in both the numerator and denominator, thus requiring around 18 delay stages. For the FIR filter, we need terms till $z^{-64}$ (64 delays) , or for even better condition satisfaction, we need terms till $z^{-70}$ (70 delays), thus it has a higher resource demand than the IIR filter.
+    \item For FIR filter, we need to adjust the value of N to meet our design specifications, whereas no such
+tuning is required in IIR case, which is a disadvantage of FIR filters
+\end{itemize}
+
+
+
+\subsection{Code}
+\textbf{A] Ideal Lowpass Function}
+\\\includegraphics[scale=0.9]{code2.jpg}
+
+\\\textbf{B] Bandstop Function}
+    \\\includegraphics[scale=0.9]{cc.jpg}
+
+
+\section{Peer Review}
+\textbf{I have reviewed the report of Harshvardhan (20d070035) and have found it to be correct} He has mentioned filter specifications as was done in the previous assignment. H got Nmins of 72 and 52 in his two filters. He has provided the impulse response graphs(stem plots) and he has also given the final magnitude and phase plots as asked. He found the optimum N by trial and error and according to his graphs, the specifications are met. Code has also been added. The comparison between FIR and butterworth and chebyshev is present too.
+
+
+
+\end{document}

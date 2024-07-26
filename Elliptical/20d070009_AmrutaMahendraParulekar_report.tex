@@ -1,0 +1,800 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{tfrupee}
+\usepackage{ragged2e}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{xurl}
+\usepackage{geometry}
+\usepackage{enumitem}
+\documentclass{minimal}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+ \geometry{
+ a4paper,
+ total={170mm,240mm},
+ left=20mm,
+ top=20mm,
+ }
+% begin the document.
+\begin{document}
+
+% make a title page.[this creates title page]
+\begin{center}\textbf{
+\LARGE{EE338 : Digital Signal Processing}\\\vspace{1em}
+\vspace{1em} \\ 
+\LARGE{Filter Design Assignment IV}\\
+\vspace{1em}
+\large{Marh 24, 2023}\\
+\vfill
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.2]{logo.png}
+\end{figure}
+\vspace{1em}
+\large{Indian Institute of Technology, Bombay}\\
+\vfill
+\LARGE{Amruta Mahendra Parulekar} \\
+\LARGE{Roll no. 20d070009} \vspace{2em}
+\\\large{Reviewed by Harshvardhan, 20d070035}
+
+}
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+\section{Student Details} %[This segment creates Section as seen in document]
+\begin{itemize}[nolistsep]
+    \item Name = Amruta Mahendra Parulekar
+    \item Roll no. = 20d070009
+    \item Filter number m = 26
+    \item Group number = 3
+    \item Review member = Harshvardhan, 20d070035 (Has reviewed my report)
+\end{itemize}
+\section{Bandpass filter Design}
+\subsection{Un-normalized discrete time filter specifications}
+
+  
+    The filter to be designed is a Band-pass filter where:
+    \begin{equation}
+        q(m) = \floor{m/10} = \floor{2.6} = 2
+    \end{equation}
+    \begin{equation}
+        r(m) = 26 - 10*q(m) = 26 - 10*2 = 6
+    \end{equation}
+    \begin{equation}
+        BL(m) = 10 + 5*q(m) + 13*r(m) = 10 + 5*2 + 13*6 = 98
+    \end{equation}
+    \begin{equation}
+        BH(m) = BL(m) + 75 = 98 + 75 = 173
+    \end{equation}
+  
+
+    \begin{enumerate}
+    \item \textbf{The passband will be equiripple and the stopband will be equiripple}
+    \item \textbf{The passband will be from 98 kHz to 173 kHz}
+    \item \textbf{The transition band will be 5 kHz on either side of the passband}
+    \item \textbf{The stopband will be from 0 - 93 kHz and 178 - 300kHz} ( sampling rate 600 kHz)
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+\subsection{Normalized discrete time filter specifications}
+Sampling rate is 600 kHz, which corresponds to 2$\pi$ on the normalized frequency axis.
+\\So on normalizing the frequency axis, each frequency $\Omega_1$ below 300 kHz gets mapped using the function:
+\begin{equation}
+    \omega=\frac{\Omega_1 * 2 \pi}{(Sampling Rate)}
+\end{equation}
+\begin{enumerate}
+    \item \textbf{The passband will be equiripple and the stopband will be equiripple}
+    \item \textbf{The passband will be from 0.3267 $\pi$ to 0.5767 $\pi$}
+    \item \textbf{The transition band will be 0.017 $\pi$ on either side of the passband}
+    \item \textbf{The stopband will be from 0 $\pi$ - 0.31 $\pi$ and 0.593 $\pi$- $\pi$}
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+\newpage
+\subsection{Analog filter specifications }
+The discrete time filter specifications can be converted to corresponding analog filter specifications by using a bilinear transform, which is given as:
+\begin{equation}
+    \Omega = tan(\omega/2)
+\end{equation}
+\begin{enumerate}
+    \item \textbf{The passband will be equiripple and the stopband will be equiripple}
+    \item \textbf{The passband will be from 0.5635($\Omega_{p1}$) to 1.2754($\Omega_{p2}$)}
+    \item \textbf{The transition band will be from 0.5295($\Omega_{s1}$) - 0.5635($\Omega_{p1}$) and \\from 1.2754($\Omega_{p2}$)-1.345($\Omega_{s2}$)}
+    \item \textbf{The stopband will be from 0 - 0.5295($\Omega_{s1}$) and 1.345($\Omega_{s2}$) - infinity}
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+\subsection{The frequency transformation }
+We use the bandpass transformation to convert the band pass filter to a lower filter:
+\begin{equation}
+    \Omega_L=\frac{\Omega^2-\Omega_{0}^2}{B\Omega}
+\end{equation}
+The two parameters B and $\Omega_{0}$ are obtained by the relations:
+\begin{equation}
+    \Omega_{0}=\sqrt{\Omega_{p1}*\Omega_{p2}}= \sqrt{0.5635*1.2753}=0.8478
+    \end{equation}
+    \begin{equation}   
+    B=\Omega_{p2}-\Omega_{p1}=0.7118
+ \end{equation}
+ \begin{center}
+\def\arraystretch{1.1}
+\bgroup
+\begin{tabular}{|c|c|}
+\hline
+\textbf{$\Omega$ }
+& \textbf{$\Omega_L$ }\\ 
+\hline \hline
+$0^+$  &  -infinity  \\ 
+\hline 
+0.5295 ($\Omega_{s1}$)   &   -1.163 ($\Omega_{Ls1}$) \\ 
+\hline
+ 0.5635 ($\Omega_{p1}$) &    -1 ($\Omega_{Lp1}$)\\ 
+\hline
+0.8478  ($\Omega_{0}$) & 0  \\ 
+\hline
+1.2753 ($\Omega_{p2}$)   &  1 ($\Omega_{Lp2}$) \\ 
+\hline
+ 1.345 ($\Omega_{s2}$) &   1.139 ($\Omega_{Ls2}$) \\ 
+ \hline
+ infinity & infinity \\
+ \hline
+\end{tabular}
+\egroup
+\end{center}
+\subsection{Frequency transformed lowpass analog filter specifications}
+\begin{enumerate}
+    \item \textbf{The passband will be equiripple and the stopband will be equiripple}
+    \item \textbf{The passband edge will be at 1($\Omega_{Lp}$)}
+    \item \textbf{The stopband edge will be min(-$\Omega_{Ls1}$,$\Omega_{Ls2}$) which is 1.139($\Omega_{Ls}$)}
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+
+\newpage
+\subsection{The analog lowpass filter transfer function}
+\subsubsection{Calculation of filter order}
+We require a Elliptical Bandpass filter, which means that both the passband and stopband are equiripple.
+\\First, the passband edge is normalized to 1 and the maximum passband response is set at one. Set the
+stopband edge and the maximum ripple in the passband and stopband. The filter order will be calculated from
+these constraints.
+\\Since the tolerance ($\delta$) in both passband and stopband is 0.15, we define parameters as:
+\begin{equation}
+    \epsilon = \sqrt{\frac{2*\delta-\delta^2}{1-2*\delta+\delta^2}} = 0.6197
+\end{equation}
+\begin{equation}
+    k_1=\frac{\epsilon}{\sqrt{\frac{1}{\delta^2}-1}}=0.09402
+\end{equation}
+\begin{equation}
+    k'_1=\sqrt{1-k_1^2}=0.9955
+\end{equation}
+\begin{equation}
+    k=\frac{\Omega_{Lp}}{\Omega_{Ls}}=0.8779
+\end{equation}
+\begin{equation}
+    k'=\sqrt{1-k^2}=0.4788
+\end{equation}
+For correct calculations, check to see that k and $k'_1$ are not too close to 1. For accuracy, they should be less
+than 1 -$ 10^{-9}$
+\\The inequality for the order N of the Elliptical filter is:
+\begin{equation}
+    N_{min}=\ceil{\frac{K(k)*K(k'_1)}{K(k')*K(k_1)}} 
+\end{equation}
+Where 
+\begin{equation}
+    K(k)=\int^{\pi/2}_0 \frac{d\theta}{\sqrt{1-k^2sin^2\theta}}
+\end{equation}
+On calculating and approximating the integral,
+\begin{equation}
+    K(k'_1)=3.7477;  K(k_1)=1.5742; K(k)=2.1953; K(k')=1.6746
+\end{equation}
+Substituting in (15),
+\begin{equation}
+    N_{min}=\ceil{3.1209}=4
+\end{equation}
+\subsubsection{Finding poles and zeroes of the transfer function}
+\href{https://community.ptc.com/sejnu66972/attachments/sejnu66972/PTCMathcad/176201/1/13.2_Analog_Elliptic_Filter_Design.pdf}{Reference}
+The elliptical functions:
+\begin{equation}
+    U(\phi,k)=1i*\int^{Im(\phi)}_0 \frac{d\theta}{\sqrt{1-k^2sin^2(1j*\theta)}}+\int^{Re(\phi)}_0 \frac{d\theta}{\sqrt{1-k^2sin^2(1j*Im(\phi)+\theta)}}
+\end{equation}
+\begin{equation}
+    \phi=1i ; sn(u,k)=sine(root(U(\phi,k)-u,\phi))
+\end{equation}
+\begin{equation}
+ v=\frac{K(k)}{N*N(k_1)}*U(atan(\frac{1}{\epsilon},k'_1))
+\end{equation}
+Since N is even,
+\begin{equation}
+m=0,1,....N-1; c_m=1+2*floor(m/2)
+\end{equation}
+Roots:
+\begin{equation}
+Sr_m=\frac{(-1)^m*1j}{k*sn(c_m*K(k)/N,k)}
+\end{equation}
+We get the roots as: \textbf{\\-1.11022302462516e-16 + 0.939929938460878i
+\\-1.11022302462516e-16 - 0.939929938460878i
+\\0.00000000000000 + 0.565295219831206i
+\\0.00000000000000 - 0.565295219831206i}
+\\Since N is even,
+\begin{equation}
+l=0,1,....N-1; d_l=1-mod(N,2)+2*floor((l+mod(N,2))/2)
+\end{equation}
+Poles:
+\begin{equation}
+Sp_l=conj(1j*sn(\frac{d_l*K(k)}{N}+1j*v,k),l)
+\end{equation}
+\\We get the poles as: \textbf{\\-0.565693012906616 + 1.13130568970048i
+\\-0.565693012906616 - 1.13130568970048i
+\\-0.0309599575375007 + 0.999508300849399i
+\\-0.0309599575375007 - 0.999508300849399i}
+
+\subsubsection{Polynomial Expansion}
+We can write the transfer function as (N even):
+\begin{equation}
+    H_{analog,LPF}(s_L) = 0.85*\frac{\prod_{l=1}^{4}(Sp_l)}{\prod_{m=1}^{4}(Sr_m)}*\frac{\prod_{m=1}^{4}(s_L-Sr_m)}{\prod_{l=1}^{4}(s_L-Sp_l)} = 4.784*\frac{\prod_{m=1}^{4}(s_L-Sr_m)}{\prod_{l=1}^{4}(s_L-Sp_l)}
+\end{equation}
+The numerator has been scaled to control DC gain
+
+\subsection{The analog bandpass filter transfer function}
+The transformation equation:
+\begin{equation}
+    s_L= \frac{s^2+\Omega_{0}^2}{Bs} = \frac{s^2+0.8478^2}{0.7118*s}
+\end{equation}
+Thus, the transfer function:
+\begin{equation}
+    H_{analog,BPF}(s)=4.784*\frac{\prod_{i=0}^{7}(s^2-Sr_m*Bs+\Omega_{0}^2)}{\prod_{i=0}^{7}(s^2-Sp_l*Bs+\Omega_{0}^2)} 
+\end{equation}
+Factorizing the denominator and numerator to get new roots so that the each can be expressed as a product of 8 monomials, we get the new poles and roots as:
+\begin{equation}
+    pol_i=\frac{Sp_lB\pm \sqrt{(Sp_lB)^2-4\Omega_{0}^4}}{2}
+\end{equation}
+\begin{equation}
+    roo_i=\frac{Sr_mB\pm \sqrt{(Sr_mB)^2-4\Omega_{0}^4}}{2}
+\end{equation}
+Thus the new analog filter transfer function where $pol_i$ are poles and $rot_i$ are the roots of the analog bandpass filter is:
+\begin{equation}
+    H_{analog,BPF}(s)=4.784*\frac{\prod_{i=0}^{7}(s-rot_i)}{\prod_{i=0}^{7}(s-pol_i)} 
+\end{equation}
+\\We get the new poles as: \textbf{\\-0.0152825778461489 + 1.27508577763069i
+\\-0.0152825778461489 - 1.27508577763069i
+\\-0.161990969014231 + 1.12777817048717i
+\\-0.161990969014231 - 1.12777817048717i
+\\-0.0896935518516070 + 0.624444871385489i
+\\-0.0896935518516070 - 0.624444871385489i
+\\-0.00675526288771787 + 0.563618240260224i
+\\-0.00675526288771787 - 0.563618240260224i}
+\\We get the new roots as: \textbf{\\-1.11022302462516e-16 + 1.68558396640932i
+\\-1.11022302462516e-16 - 1.68558396640932i
+\\2.77555756156289e-16 + 1.30715860326007i
+\\2.77555756156289e-16 - 1.30715860326007i
+\\6.93889390390723e-18 + 0.549868117156857i
+\\6.93889390390723e-18 - 0.549868117156857i
+\\-4.16333634234434e-17 + 0.426418887651817i
+\\-4.16333634234434e-17 - 0.426418887651817i}
+    
+\subsection{The discrete time filter transfer function}
+The bilinear transform from analog to discrete domain is:
+\begin{equation}
+    \frac{1-z^{-1}}{1+z^{-1}}
+\end{equation}
+On substituting this s in equation for the analog Bandpass filter, we get:
+\begin{equation}
+    H_{discrete,BPF}(s)=4.784*\frac{\prod_{i=0}^{7}((1-rot_i)-(1+rot_i)z^{-1})}{\prod_{i=0}^{7}((1-pol_i)-(1+pol_i)z^{-1})} 
+\end{equation}
+Thus we get new the poles at:
+\begin{equation}
+    p_i=\frac{1+pol_i}{1-pol_i}
+\end{equation}
+Thus we get new the roots at:
+\begin{equation}
+    r_i=\frac{1+rot_i}{1-rot_i}
+\end{equation}
+\newpage
+ \\We get the new poles as: \textbf{\\0.512528345853624 + 0.846768421342538i
+\\0.512528345853624 - 0.846768421342538i
+\\0.381664527177259 + 0.791757762083732i
+\\0.381664527177259 - 0.791757762083732i
+\\-0.235664869673740 + 0.959922759720789i
+\\-0.235664869673740 - 0.959922759720789i
+\\-0.113696626326866 + 0.860207715818710i
+\\-0.113696626326866 - 0.860207715818710i}
+\\We get the new roots as: \textbf{\\0.692286376631899 + 0.721622874311699i
+\\0.692286376631899 - 0.721622874311699i
+\\0.535679659170337 + 0.844421282744076i
+\\0.535679659170337 - 0.844421282744076i
+\\-0.479328469116527 + 0.877635584222977i
+\\-0.479328469116527 - 0.877635584222977i
+\\-0.261628505804086 + 0.965168651040181i
+\\-0.261628505804086 - 0.965168651040181i}
+
+\\We have the values of all coefficients for equation (33) and thus we can substitute and find the values of the coefficients of the discrete bandpass filter transfer function.
+\begin{center}
+\includegraphics[scale=0.4]{bb.jpg}
+\end{center}
+
+\subsection{Code}
+\begin{verbatim}
+close all;clearvars;clc;
+
+%Specifications
+fp1 = 98;fs1 = 93;fs2 = 178;fp2 = 173;f_samp = 600;
+B1=0.7118;W0=0.8478;
+Ws=1.139;Wp=1;
+Gp = 0.85;Gs = 0.15;
+
+
+%Calculating N
+ep = sqrt(1/Gp^2 - 1); es = sqrt(1/Gs^2 - 1);
+k = Wp/Ws ;k1 = ep/es;
+[K,Kp] = ellipk(k);[K1,K1p] = ellipk(k1);
+Nexact = (K1p/K1)/(Kp/K);N = ceil(Nexact); 
+
+%Elliptical approximation
+Ap=1.4116;As=16.4782;
+[z,p,H0,B,A] = ellipap2(N,Ap,As);
+[y1,~] = size(B);
+num = B(1,:);den = A(1,:);
+if y1>1
+    for i=2:y1
+        num=conv(num,B(i,:));
+        den=conv(den,A(i,:));
+    end
+end
+syms s z;
+
+%Analog LPF
+analog_lpf(s) = poly2sym(num,s)/poly2sym(den,s);  
+[ns, ds] = numden(analog_lpf(s));                                    
+ns = sym2poly(expand(ns));ds = sym2poly(expand(ds));                     
+kd = ds(1);kn = ns(1);    
+ds = ds/k;ns = ns/k;
+fvtool(ns,ds,'Analysis','freq');                       
+[zs,ps,]=tf2zp(ns,ds);
+
+%Analog BPF
+analog_bpf(s) = analog_lpf((B1*s)/(s*s + W0*W0));   
+[nsb, dsb] = numden(analog_bpf(s));                                      
+nsb = sym2poly(expand(nsb));dsb = sym2poly(expand(dsb));                 
+kd = dsb(1);kn = nsb(1);    
+dsb = dsb/k;nsb = nsb/k;
+fvtool(nsb,dsb,'Analysis','freq');                       
+[zsb,psb,]=tf2zp(nsb,dsb);
+k=kn/kd;
+
+%Discrete BPF
+discrete_bpf(z) = analog_bpf((z-1)/(z+1));              
+[nz, dz] = numden(discrete_bpf(z));                                        
+nz = sym2poly(expand(nz));dz = sym2poly(expand(dz));                    
+k = dz(1);    
+dz = dz/k;nz = nz/k;
+fvtool(nz,dz,'Analysis','freq');                       
+[z,p,]=tf2zp(nz,dz);
+
+%Pole zero plot
+figure;
+plot(real(p),imag(p),'rX');
+hold on
+plot(real(z),imag(z),'bO');
+title("Poles and roots of the transfer function")
+xlabel("Real")
+ylabel("Imaginary")
+axis equal
+grid on
+t = linspace(0,2*pi,1000);
+hold on
+plot(cos(t),sin(t),'b-') 
+
+%Magnitude and phase plot
+[H,f] = freqz(nz,dz,1024*1024, f_samp);
+figure;
+plot(f,abs(H),'LineWidth',1);
+hold on;
+title("Magnitude Response vs unnormalized frquency")
+xlabel("1000 Hz")
+ylabel("Response")
+xline(fs1);xline(fp1);xline(fp2);xline(fs2);
+yline(0.85);yline(0.15);
+grid
+\end{verbatim}
+\subsection{Comparison of results with Butterworth filter}
+\subsubsection{Magnitude vs unnormalized frequency response }
+\begin{center}
+\includegraphics[scale=0.4]{ba.jpg}
+\end{center}
+\newpage
+\textbf{Corresponding Butterworth graph}
+\begin{center}
+\includegraphics[scale=1]{p4 (1).jpg}
+\end{center}
+\subsubsection{Magnitude and phase response vs normalized frequency}
+\begin{center}
+\includegraphics[scale=0.4]{bc.jpg}
+\end{center}
+\textbf{Corresponding Butterworth graph}
+\begin{center}
+\includegraphics[scale=0.7]{p1 (1).jpg}
+\includegraphics[scale=0.7]{p2 (1).jpg}
+\end{center}
+\subsubsection{Comparisons}
+\begin{itemize}
+    \item In both realizations, the specifications are satisfied and we can observe fs1,fs2,fp1 \& fp2.
+    \item The Butterworth filter has a monotonic passband and a monotonic stopband while the elliptical filter has equiripple passband and stopband.
+    \item The Butterworth filter had an order of 38 in both the numerator and denominator, thus requiring around 76 delay stages. For the elliptical filter, we have a power of 8 in both numerator and denominator, thus requiring only around 16 delays. Thus, the elliptical filter is more resource efficient than the butterworth filter.(lower order)
+\end{itemize}
+
+\section{Bandstop filter Design}
+\subsection{Un-normalized discrete time filter specifications}
+
+  
+    The filter to be designed is a Band-stop filter where:
+    \begin{equation}
+        q(m) = \floor{m/10} = \floor{2.6} = 2
+    \end{equation}
+    \begin{equation}
+        r(m) = 26 - 10*q(m) = 26 - 10*2 = 6
+    \end{equation}
+    \begin{equation}
+        BL(m) = 20 + 3*q(m) + 11*r(m) = 20 + 3*2 + 11*6 = 92
+    \end{equation}
+    \begin{equation}
+        BH(m) = BL(m) + 40 = 92 + 40 = 132
+    \end{equation}
+  
+
+    \begin{enumerate}
+    \item \textbf{The passband will be equiripple and the stopband will be equiripple}
+    \item \textbf{The stopband will be from 92 kHz to 132 kHz}
+    \item \textbf{The transition band will be 5 kHz on either side of the stopband}
+    \item \textbf{The passband is from 0 - 87 kHz and 137 - 212.5kHz} ( sampling rate 425 kHz)
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+\subsection{Normalized discrete time filter specifications}
+Sampling rate is 425 kHz, which corresponds to 2$\pi$ on the normalized frequency axis.
+\\So on normalizing the frequency axis, each frequency $\Omega_1$ below 212.5 kHz gets mapped using the function:
+\begin{equation}
+    \omega=\frac{\Omega_1 * 2 \pi}{(Sampling Rate)}
+\end{equation}
+\begin{enumerate}
+    \item \textbf{The passband will be equiripple and the stopband will be equiripple}
+    \item \textbf{The stopband will be from 0.4329 $\pi$ to 0.6212 $\pi$}
+    \item \textbf{The transition band will be 0.0235 $\pi$ on either side of the stopband}
+    \item \textbf{The passband will be from 0 - 0.4094 $\pi$ and 0.6447 $\pi$ - $\pi$} 
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+
+\subsection{Analog filter specifications }
+The discrete time filter specifications can be converted to corresponding analog filter specifications by using a bilinear transform, which is given as:
+\begin{equation}
+    \Omega = tan(\omega/2)
+\end{equation}
+\begin{enumerate}
+    \item \textbf{The passband will be equiripple and the stopband will be equiripple}
+    \item \textbf{The stopband will be from 0.8086 ($\Omega_{s1}$) to 1.4774($\Omega_{s2}$)}
+    \item \textbf{The transition band will be from 0.7493 ($\Omega_{p1}$) - 0.8086 ($\Omega_{s1}$) and \\1.4774($\Omega_{s2}$) - 1.6018 ($\Omega_{p2}$)}
+    \item \textbf{The passband will be from 0 - 0.7493 ($\Omega_{p1}$)  and 1.6018 ($\Omega_{p2}$) - infinity} 
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+\end{enumerate}
+\subsection{The frequency transformation }
+We use the bandstop transformation to convert the band pass filter to a lower filter:
+\begin{equation}
+    \Omega_L=\frac{B\Omega}{\Omega_{0}^2-\Omega^2}
+\end{equation}
+The two parameters B and $\Omega_{0}$ are obtained by the relations:
+\begin{equation}
+    \Omega_{0}=\sqrt{\Omega_{p1}*\Omega_{p2}}= \sqrt{0.7493*1.6108}=1.099
+    \end{equation}
+    \begin{equation}   
+    B=\Omega_{p2}-\Omega_{p1}=0.8615
+ \end{equation}
+ \begin{center}
+\def\arraystretch{1.1}
+\bgroup
+\begin{tabular}{|c|c|}
+\hline
+\textbf{$\Omega$ }
+& \textbf{$\Omega_L$ }\\ 
+\hline \hline
+$0^+$  &  $0^+$  \\ 
+\hline 
+0.7493 ($\Omega_{p1}$)   &   +1 ($\Omega_{Lp1}$) \\ 
+\hline
+0.8086 ($\Omega_{s1}$)  &   1.2578  ($\Omega_{Ls1}$)\\ 
+\hline
+1.099  ($\Omega_{0-}$) & +infinity  \\ 
+\hline
+1.099  ($\Omega_{0+}$) & -infinity  \\ 
+\hline
+1.4774 ($\Omega_{s2}$)   &  -1.3029 ($\Omega_{Ls2}$) \\ 
+\hline
+1.6108 ($\Omega_{p2}$)  &   -1 ($\Omega_{Lp2}$) \\ 
+ \hline
+ infinity & $0^-$ \\
+ \hline
+\end{tabular}
+\egroup
+\end{center}
+\subsection{Frequency transformed lowpass analog filter specifications}
+\begin{enumerate}
+    \item \textbf{The passband will be equiripple and the stopband will be equiripple}
+    \item \textbf{The passband edge will be at 1($\Omega_{Lp}$)}
+    \item \textbf{The stopband edge will be min($\Omega_{Ls1}$,$-\Omega_{Ls2}$) which is 1.2578($\Omega_{Ls}$)}
+    \item \textbf{The passband and stopband tolerances are 0.15 in magnitude}
+
+\end{enumerate}
+
+\subsection{The analog lowpass filter transfer function}
+We require a Elliptical Bandstop filter, which means that both the passband and stopband are equiripple.
+\\First, the passband edge is normalized to 1 and the maximum passband response is set at one. Set the
+stopband edge and the maximum ripple in the passband and stopband. The filter order will be calculated from
+these constraints.
+\\Since the tolerance ($\delta$) in both passband and stopband is 0.15, we define parameters as:
+\begin{equation}
+    \epsilon = \sqrt{\frac{2*\delta-\delta^2}{1-2*\delta+\delta^2}} = 0.6197
+\end{equation}
+\begin{equation}
+    k_1=\frac{\epsilon}{\sqrt{\frac{1}{\delta^2}-1}}=0.09402
+\end{equation}
+\begin{equation}
+    k'_1=\sqrt{1-k_1^2}=0.9955
+\end{equation}
+\begin{equation}
+    k=\frac{\Omega_{Lp}}{\Omega_{Ls}}=0.7950
+\end{equation}
+\begin{equation}
+    k'=\sqrt{1-k^2}=0.6065
+\end{equation}
+For correct calculations, check to see that k and $k'_1$ are not too close to 1. For accuracy, they should be less
+than 1 -$ 10^{-9}$
+\\The inequality for the order N of the Elliptical filter is:
+\begin{equation}
+    N_{min}=\ceil{\frac{K(k)*K(k'_1)}{K(k')*K(k_1)}} 
+\end{equation}
+Where 
+\begin{equation}
+    K(k)=\int^{\pi/2}_0 \frac{d\theta}{\sqrt{1-k^2sin^2\theta}}
+\end{equation}
+On calculating and approximating the integral,
+\begin{equation}
+    K(k'_1)=3.7477;  K(k_1)=1.5742; K(k)=1.9857; K(k')=1.7558
+\end{equation}
+Substituting in (15),
+\begin{equation}
+    N_{min}=\ceil{2.6924}=3
+\end{equation}
+
+\subsubsection{Finding poles and zeroes of the transfer function}
+\href{https://community.ptc.com/sejnu66972/attachments/sejnu66972/PTCMathcad/176201/1/13.2_Analog_Elliptic_Filter_Design.pdf}{Reference}
+The elliptical functions:
+\begin{equation}
+    U(\phi,k)=1i*\int^{Im(\phi)}_0 \frac{d\theta}{\sqrt{1-k^2sin^2(1j*\theta)}}+\int^{Re(\phi)}_0 \frac{d\theta}{\sqrt{1-k^2sin^2(1j*Im(\phi)+\theta)}}
+\end{equation}
+\begin{equation}
+    \phi=1i ; sn(u,k)=sine(root(U(\phi,k)-u,\phi))
+\end{equation}
+\begin{equation}
+ v=\frac{K(k)}{N*N(k_1)}*U(atan(\frac{1}{\epsilon},k'_1))
+\end{equation}
+Since N is odd,
+\begin{equation}
+m=0,1,....N-2; c_m=2+2*floor(m/2)
+\end{equation}
+Roots:
+\begin{equation}
+Sr_m=\frac{(-1)^m*1j}{k*sn(c_m*K(k)/N,k)}
+\end{equation}
+We get the roots as: \textbf{\\0.00000000000000 + 0.00000000000000i
+\\-0.00000000000000 + 0.793401938900610i
+\\0.00000000000000 - 0.793401938900610i}
+\\Since N is odd,
+\begin{equation}
+l=0,1,....N-1; d_l=1-mod(N,2)+2*floor((l+mod(N,2))/2)
+\end{equation}
+Poles:
+\begin{equation}
+Sp_l=conj(1j*sn(\frac{d_l*K(k)}{N}+1j*v,k),l)
+\end{equation}
+\\We get the poles as: \textbf{\\-1.60473946109342 + 0.00000000000000i
+\\-0.115266491897389 + 0.993048663800526i
+\\-0.115266491897389 - 0.993048663800526i}
+
+\subsubsection{Polynomial Expansion}
+We can write the transfer function as (N odd):
+\begin{equation}
+    H_{analog,LPF}(s_L) = 1*\frac{\prod_{l=1}^{3}(Sp_l)}{\prod_{m=1}^{3}(Sr_m)}*\frac{\prod_{m=1}^{3}(s_L-Sr_m)}{\prod_{l=1}^{4}(s_L-Sp_l)} = 2.5492*\frac{\prod_{m=1}^{3}(s_L-Sr_m)}{\prod_{l=1}^{4}(s_L-Sp_l)}
+\end{equation}
+The numerator has been scaled to make DC gain 1
+\subsection{The analog bandstop filter transfer function}
+The transformation equation:
+\begin{equation}
+    s_L= \frac{Bs}{s^2+\Omega_{0}^2} = \frac{0.8615*s}{s^2+1.2078}
+\end{equation}
+Thus, the transfer function:
+\begin{equation}
+    H_{analog,BSF}(s)=2.5492*\frac{\prod_{i=0}^{2}(s^2-\frac{Bs}{Sp_l}+\Omega_{0}^2)}{\prod_{i=0}^{2}(s^2-\frac{Bs}{Sp_l}+\Omega_{0}^2)} 
+\end{equation}
+\\Factorizing the denominator to get new roots so that the numerator and denominator can each be expressed as a product of 6 monomials.
+\\We get the new poles and roots as:
+\begin{equation}
+    pol_i=\frac{\frac{B}{Sp_l}\pm \sqrt{(\frac{B}{Sp_l})^2-4\Omega_{0}^2}}{2};rot_i=\frac{\frac{B}{Sr_m}\pm \sqrt{(\frac{B}{Sr_m})^2-4\Omega_{0}^2}}{2}
+\end{equation}
+
+    
+
+Thus the new analog filter transfer function where $pol_i$ are poles and $rot_i$ are roots of the analog bandstop filter is:
+\begin{equation}
+    H_{analog,BSF}(s)=2.5492*\frac{\prod_{i=0}^{5}(s-rot_i)}{\prod_{i=0}^{5}(s-pol_i)} 
+\end{equation}
+
+We get the new poles as: \textbf{\\-0.0676741640594894 + 1.60615952902148i
+\\-0.0676741640594894 - 1.60615952902148i
+\\-0.691241522865993 + 0.854392273528913i
+\\-0.691241522865993 - 0.854392273528913i
+\\-0.0316279187101118 + 0.750648105157324i
+\\-0.0316279187101118 - 0.750648105157324i}
+\\We get the new roots as: \textbf{\\0.00000000000000 + 1.49267032845577i
+\\0.00000000000000 - 1.49267032845577i
+\\9.71445146547012e-17 + 1.09900000000000i
+\\9.71445146547012e-17 - 1.09900000000000i
+\\-1.11022302462516e-16 + 0.809154558092894i
+\\-1.11022302462516e-16 - 0.809154558092894i}
+    
+\subsection{The discrete time filter transfer function}
+The bilinear transform from analog to discrete domain is:
+\begin{equation}
+    \frac{1-z^{-1}}{1+z^{-1}}
+\end{equation}
+On substituting this s in equation for the analog Bandstop filter, we get:
+\begin{equation}
+    H_{discrete,BPF}(s)=2.549*\frac{\prod_{i=0}^{5}((1-rot_i)-(1+rot_i)z^{-1})}{\prod_{i=0}^{5}((1-pol_i)-(1+pol_i)z^{-1})} 
+\end{equation}
+Thus we get new the poles and roots at:
+\begin{equation}
+    p_i=\frac{1+pol_i}{1-pol_i};  r_i=\frac{1+rot_i}{1-rot_i}
+\end{equation}
+
+ \\We get the new poles as: \textbf{\\0.267567369280753 + 0.922325798529715i
+\\0.267567369280753 - 0.922325798529715i
+\\-0.425931718110352 + 0.863601716988509i
+\\-0.425931718110352 - 0.863601716988509i
+\\-0.0578787074652288 + 0.475946895925734i
+\\-0.0578787074652288 - 0.475946895925734i}
+\\We get the new roots as: \textbf{\\0.208655594465270 + 0.977989183426046i
+\\0.208655594465270 - 0.977989183426046i
+\\-0.380433733517267 + 0.924808182490895i
+\\-0.380433733517267 - 0.924808182490895i
+\\-0.0941212545877101 + 0.995560741208108i
+\\-0.0941212545877101 - 0.995560741208108i}
+
+\\We have the values of all coefficients for equation (67) and thus we can substitute and find the values of the coefficients of the discrete bandstop filter transfer function.
+
+\begin{center}
+\includegraphics[scale=0.35]{qr.jpg}
+\end{center}
+
+\subsection{Code}
+\begin{verbatim}
+close all;clearvars;clc;
+
+%Specifications
+fp1 = 87;fs1 = 92;fs2 = 132;fp2 = 137;f_samp = 425;
+B1=0.8615;W0=1.099;
+Ws=1.2578;Wp=1;
+Gp = 0.85;Gs = 0.15;
+
+%Calculating N
+ep = sqrt(1/Gp^2 - 1); es = sqrt(1/Gs^2 - 1);
+k = Wp/Ws ;k1 = ep/es;
+[K,Kp] = ellipk(k);[K1,K1p] = ellipk(k1);
+Nexact = (K1p/K1)/(Kp/K);N = ceil(Nexact); 
+
+%Elliptical approximation
+Ap=1.4116;As=16.4782;
+[z,p,H0,B,A] = ellipap2(N,Ap,As);
+[y1,~] = size(B);
+num = B(1,:);den = A(1,:);
+if y1>1
+    for i=2:y1
+        num=conv(num,B(i,:));
+        den=conv(den,A(i,:));
+    end
+end
+syms s z;
+
+%Analog LPF
+analog_lpf(s) = poly2sym(num,s)/poly2sym(den,s);  
+[ns, ds] = numden(analog_lpf(s));                                        
+ns = sym2poly(expand(ns));
+ds = sym2poly(expand(ds));                             
+kd = ds(1);kn = ns(1);    
+ds = ds/k;ns = ns/k;
+fvtool(ns,ds,'Analysis','freq');                       
+[zs,ps,]=tf2zp(ns,ds);
+
+%Analog BSF
+analog_bpf(s) = analog_lpf((s*s + W0*W0)/(B1*s));   
+[nsb, dsb] = numden(analog_bpf(s));                                        
+nsb = sym2poly(expand(nsb));
+dsb = sym2poly(expand(dsb));                             
+kd = dsb(1);kn = nsb(1);    
+dsb = dsb/k;nsb = nsb/k;
+fvtool(nsb,dsb,'Analysis','freq');                       
+[zsb,psb,]=tf2zp(nsb,dsb);
+k=kn/kd;
+
+%Discrete BPF
+discrete_bpf(z) = analog_bpf((z-1)/(z+1));              
+[nz, dz] = numden(discrete_bpf(z));                                        
+nz = sym2poly(expand(nz));
+dz = sym2poly(expand(dz));                             
+k = dz(1);    
+dz = dz/k;nz = nz/k;
+fvtool(nz,dz,'Analysis','freq');                       
+[z,p,]=tf2zp(nz,dz);
+
+%Pole zero plot
+figure;
+plot(real(p),imag(p),'rX');
+hold on
+plot(real(z),imag(z),'bO');
+title("Poles and roots of the transfer function")
+xlabel("Real")
+ylabel("Imaginary")
+axis equal
+grid on
+t = linspace(0,2*pi,1000);
+hold on
+plot(cos(t),sin(t),'b-') 
+
+
+%Magnitude and phase plot
+[H,f] = freqz(nz,dz,1024*1024, f_samp);
+figure;
+plot(f,abs(H),'LineWidth',1);
+hold on;
+title("Magnitude Response vs unnormalized frquency")
+xlabel("1000 Hz")
+ylabel("Response")
+xline(fs1);xline(fp1);xline(fp2);xline(fs2);
+yline(0.85);yline(0.15);
+grid
+\end{verbatim}
+\subsection{Comparison of results with Chebyshev filter}
+\subsubsection{Magnitude vs unnormalized frequency response }
+\begin{center}
+\includegraphics[scale=0.4]{qq.jpg}
+\end{center}
+\textbf{Corresponding Chebyshev graph}
+\begin{center}
+\includegraphics[scale=1]{ac (1).jpg}
+\end{center}
+\subsubsection{Magnitude and phase response vs normalized frequency}
+\begin{center}
+\includegraphics[scale=0.4]{qt.jpg}
+\end{center}
+\textbf{Corresponding Chebyshev graph}
+\begin{center}
+\includegraphics[scale=0.7]{ae (1).jpg}
+\includegraphics[scale=0.7]{ad (1).jpg}
+\end{center}
+\subsubsection{Comparisons}
+\begin{itemize}
+    \item In both realizations, the specifications are satisfied and we can observe fs1,fs2,fp1 \& fp2.
+    \item The Chebyshev filter has a equiripple passband and a monotonic stopband while the elliptical filter has equiripple passband and stopband.
+    \item The Chebyshev filter had an order of 10 in both the numerator and denominator, thus
+requiring around 18 delay stage For the elliptical filter, we have a power of 6 in both numerator and denominator, thus requiring only around 12 delays. Thus, the elliptical filter is more resource efficient than the chebyshev filter. (lower order)
+\end{itemize}
+
+
+
+\section{Peer Review}
+\textbf{I have reviewed the report of Sameep Chattopadhyay (20d070067) and have found it to be correct.} The filter design steps were completed and the phase and magnitude response plots were present. He has started from the un-normalised filter, then normalized it, then converted to an analog filter, which was converted to a lowpass filter, to which he applied a frequency transform and then reconverted it to a bandpass  filter in the first case and a bandstop filter in the second case.
+
+\end{document}
